@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Iterator;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
@@ -90,29 +91,37 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    private void addPipePair(int x) {
+        int pipeHeight = (int) (Math.random() * 200) + 100;
+        pipes.add(new Pipe(x, 0, pipeWidth, pipeHeight)); // Top pipe
+        pipes.add(new Pipe(x, pipeHeight + pipeGap, pipeWidth, 600 - pipeHeight - pipeGap)); // Bottom pipe
+    }
+
+
     private void initPipes() {
-        int pipeGap = 200;
-        int pipeWidth = 50;
+        pipes.clear(); // Clear any existing pipes
+        int initialPipeX = 800; // Starting X position for the first set of pipes
         for (int i = 0; i < 5; i++) {
-            int pipeHeight = (int) (Math.random() * 200) + 100;
-            pipes.add(new Pipe(800 + i * 300, 0, pipeWidth, pipeHeight));
-            pipes.add(new Pipe(800 + i * 300, pipeHeight + pipeGap, pipeWidth,
-                    600 - pipeHeight - pipeGap));
+            addPipePair(initialPipeX + i * 300);
         }
     }
 
     private void updatePipes() {
-        for (int i = 0; i < pipes.size(); i++) {
-            Pipe pipe = pipes.get(i);
+        Iterator<Pipe> it = pipes.iterator();
+        while (it.hasNext()) {
+            Pipe pipe = it.next();
             pipe.update();
             if (pipe.isOffScreen()) {
-                pipes.remove(i);
-                i--; // Adjust the index after removal
-                int pipeHeight = (int) (Math.random() * 200) + 100;
-                pipes.add(new Pipe(800, 0, pipeWidth, pipeHeight));
-                pipes.add(new Pipe(800, pipeHeight + pipeGap, pipeWidth, 600 - pipeHeight - pipeGap));
+                it.remove();
             }
         }
+
+        // Ensure pipes are added in pairs with a consistent gap
+        while (pipes.size() < 10) {
+            int lastPipeX = pipes.get(pipes.size() - 1).getX();
+            addPipePair(lastPipeX + 300);
+        }
     }
+
 
 }

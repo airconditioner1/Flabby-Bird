@@ -46,4 +46,8 @@ public class Pipe {
     public int getHeight() {
         return height;
     }
+
+    public int getX() {
+        return x;
+    }
 }
